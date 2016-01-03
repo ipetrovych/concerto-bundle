@@ -35,26 +35,9 @@ class Conductor extends EntityManager implements SoloistAwareInterface
      */
     public static function create($conn,  Configuration $config, EventManager $eventManager = null)
     {
-
-        if ( ! $config->getMetadataDriverImpl() ) {
-            throw ORMException::missingMappingDriverImpl();
-        }
-
-        if ( is_array( $conn ) ) {
-            $eventManager = $eventManager ?: new EventManager();
-            $conn = DriverManager::getConnection( $conn, $config, $eventManager );
-
-        } elseif ( $conn instanceof Connection ) {
-            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                throw ORMException::mismatchedEventManager();
-            }
-        } else {
-            throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
         $config->addFilter('soloist', 'Ctrl\Bundle\ConcertoBundle\ORM\Filter\SoloistFilter');
 
-        return new self($conn, $config, $eventManager == null ? new EventManager() : $eventManager);
+        return parent::create($conn, $config, $eventManager);
     }
 
     /**
